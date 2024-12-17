@@ -1,0 +1,203 @@
+{
+  "name": "aemdatapipeline",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@cap-js-community/odata-v2-adapter": "^1.13.8",
+    "@sap-cloud-sdk/http-client": "^3.24.0",
+    "@sap-cloud-sdk/resilience": "^3.24.0",
+    "@sap/cds": "^8",
+    "@sap/xssec": "^4",
+    "express": "^4",
+    "hdb": "^0.19.11",
+    "solclientjs": "^10.17.1",
+    "@cap-js/hana": "^1"
+  },
+  "devDependencies": {
+    "@cap-js/cds-types": "^0.8",
+    "@cap-js/hana": "^1.5.0",
+    "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^8"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "solace": "node solace.js",
+    "setup": "cds bind -2 adp-conn,adp-db",
+    "hybrid": "cds watch --profile hybrid"
+  },
+  "cds": {
+    "log": {
+      "level": "${LOG_LEVEL:-info}"
+    },
+    "requires": {
+      "connectivity": true,
+      "destinations": true,
+      "db": {
+        "kind": "hana-cloud"
+      },
+      "SIECAPI_SALES_ORDER_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/SIECAPI_SALES_ORDER_SRV",
+        "[hybrid]": {
+          "credentials": {
+            "destination": "T4D_200",
+            "path": "/sap/opu/odata/sap/API_SALES_ORDER_SRV"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "sherpa-s4-basic",
+            "path": "/sap/opu/odata/sap/API_SALES_ORDER_SRV"
+          }
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      },
+      "SIECAPI_BUSINESS_PARTNER": {
+        "kind": "odata-v2",
+        "model": "srv/external/SIECAPI_BUSINESS_PARTNER",
+        "[hybrid]": {
+          "credentials": {
+            "destination": "T4D_200",
+            "path": "/sap/opu/odata/sap/API_BUSINESS_PARTNER"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "sherpa-s4-basic",
+            "path": "/sap/opu/odata/sap/API_BUSINESS_PARTNER"
+          }
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      },
+      "[hybrid]": {
+        "auth": {
+          "kind": "xsuaa",
+          "credentials": {
+            "clientid": "your-client-id",
+            "clientsecret": "your-client-secret",
+            "url": "http://localhost:8080"
+          }
+        }
+      },
+      "[production]": {
+        "auth": "xsuaa"
+      },
+      "PRODUCT": {
+        "kind": "odata",
+        "model": "srv/external/PRODUCT",
+        "[hybrid]": {
+          "credentials": {
+            "destination": "T4D_200",
+            "path": "/sap/opu/odata4/sap/api_product/srvd_a2x/sap/product/0001/"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "sherpa-s4-basic",
+            "path": "/sap/opu/odata4/sap/api_product/srvd_a2x/sap/product/0001/"
+          }
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      },
+      "PURCHASEORDER": {
+        "kind": "odata",
+        "model": "srv/external/PURCHASEORDER",
+        "[hybrid]": {
+          "credentials": {
+            "destination": "T4D_200",
+            "path": "/sap/opu/odata4/sap/api_purchaseorder_2/srvd_a2x/sap/purchaseorder/0001/"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "sherpa-s4-basic",
+            "path": "/sap/opu/odata4/sap/api_purchaseorder_2/srvd_a2x/sap/purchaseorder/0001/"
+          }
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      },
+      "PURCHASEREQUISITION": {
+        "kind": "odata",
+        "model": "srv/external/PURCHASEREQUISITION",
+        "[hybrid]": {
+          "credentials": {
+            "destination": "T4D_200",
+            "path": "/sap/opu/odata4/sap/api_purchaserequisition_2/srvd_a2x/sap/purchaserequisition/0001/"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "sherpa-s4-basic",
+            "path": "/sap/opu/odata4/sap/api_purchaserequisition_2/srvd_a2x/sap/purchaserequisition/0001/"
+          }
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      },
+      "SIECAPI_PRODUCTION_ORDER_2_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/SIECAPI_PRODUCTION_ORDER_2_SRV",
+        "[hybrid]": {
+          "credentials": {
+            "destination": "T4D_200",
+            "path": "/sap/opu/odata/sap/API_PRODUCTION_ORDER_2_SRV"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "sherpa-s4-basic",
+            "path": "/sap/opu/odata/sap/API_PRODUCTION_ORDER_2_SRV"
+          }
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      },
+      "SIECAPI_BILLING_DOCUMENT_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/SIECAPI_BILLING_DOCUMENT_SRV",
+        "[hybrid]": {
+          "credentials": {
+            "destination": "T4D_200",
+            "path": "/sap/opu/odata/sap/API_BILLING_DOCUMENT_SRV"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "sherpa-s4-basic",
+            "path": "/sap/opu/odata/sap/API_BILLING_DOCUMENT_SRV"
+          }
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      },
+      "SIECAPI_OUTBOUND_DELIVERY_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/SIECAPI_OUTBOUND_DELIVERY_SRV",
+        "[hybrid]": {
+          "credentials": {
+            "destination": "T4D_200",
+            "path": "/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=0002"
+          }
+        },
+        "[production]": {
+          "credentials": {
+            "destination": "sherpa-s4-basic",
+            "path": "/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=0002"
+          }
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      }
+    },
+    "sql": {
+      "native_hana_associations": false
+    }
+  }
+}

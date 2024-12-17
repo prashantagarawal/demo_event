@@ -1,0 +1,79 @@
+_schema-version: 3.3.0
+ID: aemdatapipeline
+version: 1.0.0
+description: "AEM Data Pipeline"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+modules:
+  - name: adp-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+      readiness-health-check-type: http
+      readiness-health-check-http-endpoint: /health
+    build-parameters:
+      builder: npm
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: adp-conn
+      - name: adp-dest
+      - name: adp-logs
+      - name: adp-uaa
+      - name: adp-db
+      - name: adp-scaler
+
+  - name: adp-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: adp-db
+
+resources:
+  - name: adp-conn
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: connectivity
+      service-plan: lite
+  - name: adp-dest
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+  - name: adp-logs
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: application-logs
+      service-plan: lite
+  - name: adp-uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: adp-${org}-${space}
+        tenant-mode: dedicated
+  - name: adp-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+  - name: adp-scaler
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: autoscaler
+      service-plan: standard
+      config:
+        file: autoscaler-config.json
